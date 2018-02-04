@@ -854,6 +854,19 @@ var Recaptcha = require('../utils/Recaptcha');
 var Panel = ReactBootstrap.Panel;
 var LocalStorageMixin = require('react-localstorage');
 
+var updateMetatag = function updateMetatag(event) {
+    if (event) {
+        var eventDescription = event.subject + ' ' + Utils.timeStampToDate(event.startTime) + ' ' + Utils.formatDateTime(event.startTime, 'dd. MMMM' - Utils.formatDateTime(event.startTime, 'HH:mm'));
+        var allMetaElements = document.getElementsByTagName('meta');
+        for (var i = 0; i < allMetaElements.length; i++) {
+            if (allMetaElements[i].getAttribute('property') === 'og:description') {
+                allMetaElements[i].setAttribute('content', eventDescription);
+                break;
+            }
+        }
+    }
+};
+
 var Participant = React.createClass({
     displayName: 'Participant',
 
@@ -983,6 +996,10 @@ var Event = React.createClass({
         }).map(function (participant) {
             return React.createElement(Participant, { key: participant.id, participant: participant, unregister: _this.unregister });
         });
+
+        if (!this.props.event.loading) {
+            updateMetatag(event);
+        }
 
         return React.createElement(
             'div',

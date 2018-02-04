@@ -12,6 +12,22 @@ var Recaptcha = require('../utils/Recaptcha');
 var Panel = ReactBootstrap.Panel;
 var LocalStorageMixin = require('react-localstorage');
 
+const updateMetatag = (event) => {
+    if (event) {
+        const eventDescription = event.subject + ' ' + Utils.timeStampToDate(event.startTime) +' ' + Utils.formatDateTime(event.startTime, 'dd. MMMM' - Utils.formatDateTime(event.startTime, 'HH:mm'));
+        var allMetaElements = document.getElementsByTagName('meta');
+        for (var i=0; i<allMetaElements.length; i++) { 
+        if (allMetaElements[i].getAttribute('property') === 'og:description') { 
+            allMetaElements[i].setAttribute('content', eventDescription); 
+            break;
+        } 
+    }
+} 
+
+
+};
+    
+
 var Participant = React.createClass({
     render: function () {
         return <div key={this.props.participant.id}>
@@ -149,7 +165,11 @@ var Event = React.createClass({
         var reserves = event.participants
             .filter(participant => participant.reserve === true)
             .map(participant => <Participant key={participant.id} participant={participant} unregister={this.unregister}/>);
-
+        
+        if (!this.props.event.loading) {
+            updateMetatag(event);
+        }
+        
         return (
                 <div>
                     <Loader isLoading={this.props.event.loading}>
